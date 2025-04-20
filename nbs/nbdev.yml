@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "ipykernel-helper"
+  site-url: "https://AnswerDotAI.github.io/ipykernel-helper"
+  description: "Helpers for ipykernel and friends"
+  repo-branch: main
+  repo-url: "https://github.com/AnswerDotAI/ipykernel-helper"
