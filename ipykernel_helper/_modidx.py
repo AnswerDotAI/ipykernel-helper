@@ -5,4 +5,5 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://AnswerDotAI.github.io',
                 'git_url': 'https://github.com/AnswerDotAI/ipykernel-helper',
                 'lib_path': 'ipykernel_helper'},
-  'syms': {'ipykernel_helper.core': {'ipykernel_helper.core.foo': ('core.html#foo', 'ipykernel_helper/core.py')}}}
+  'syms': { 'ipykernel_helper.core': { 'ipykernel_helper.core.safe_repr': ('core.html#safe_repr', 'ipykernel_helper/core.py'),
+                                       'ipykernel_helper.core.user_items': ('core.html#user_items', 'ipykernel_helper/core.py')}}}
