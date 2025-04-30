@@ -105,7 +105,13 @@ def get_vars(vs:list):
     return {v:ns[v] for v in vs if v in ns}
 
 # %% ../nbs/00_core.ipynb
+def _get_schema(ns: dict, t):
+    "Check if tool `t` has errors."
+    if t not in ns: return f"`{t}` not found. Did you run it?"
+    try: return get_schema(ns[t])
+    except Exception as e: return f"`{t}`: {e}."
+
 def get_schemas(fs:list):
     "Get schemas from namespace."
     ns = get_ipython().user_ns
-    return {f:get_schema(ns[f]) for f in fs if f in ns}
+    return {f:_get_schema(ns,f) for f in fs}
