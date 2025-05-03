@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.5
+
+### New Features
+
+- Add run_cmd() and transient() ([#4](https://github.com/AnswerDotAI/ipykernel-helper/issues/4))
+
+
 ## 0.0.4
 
 ### New Features
