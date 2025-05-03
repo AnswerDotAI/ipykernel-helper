@@ -21,7 +21,9 @@ d = { 'settings': { 'branch': 'main',
                                                                                          'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core._get_schema': ('core.html#_get_schema', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core._rank': ('core.html#_rank', 'ipykernel_helper/core.py'),
+                                       'ipykernel_helper.core._safe_repr': ('core.html#_safe_repr', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core._signatures': ('core.html#_signatures', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.load_ipython_extension': ( 'core.html#load_ipython_extension',
                                                                                          'ipykernel_helper/core.py'),
-                                       'ipykernel_helper.core.safe_repr': ('core.html#safe_repr', 'ipykernel_helper/core.py')}}}
+                                       'ipykernel_helper.core.run_cmd': ('core.html#run_cmd', 'ipykernel_helper/core.py'),
+                                       'ipykernel_helper.core.transient': ('core.html#transient', 'ipykernel_helper/core.py')}}}
