@@ -135,8 +135,8 @@ def transient(data='', subtype='plain', mimetype='text', meta=None, update=False
     display({f'{mimetype}/{subtype}': data}, raw=True, metadata=meta, transient=kw, update=update)
 
 # %% ../nbs/00_core.ipynb
-def run_cmd(cmd, meta=None, update=False, **kw):
-    transient(meta=meta, update=update, cmd=cmd, **kw)
+def run_cmd(cmd, data='', meta=None, update=False, **kw):
+    transient(data, meta=meta, update=update, cmd=cmd, **kw)
 
 # %% ../nbs/00_core.ipynb
 def load_ipython_extension(ip):
