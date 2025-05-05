@@ -94,7 +94,7 @@ def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
     ns = self.user_ns
     ctx = _signatures(ns, code, line=line_no, col=col_no)
     def _s(s): return {'label':s.description,'typ':s.type, 'mod':s.module_name, 'doc':s.docstring(),
-                       'idx':s.index, 'params':[{'name':p.name} for p in s.params]}
+                       'idx':s.index, 'params':[{'name':p.name, 'desc':p.description} for p in s.params]}
     return [_s(opt) for opt in ctx]
 
 # %% ../nbs/00_core.ipynb
