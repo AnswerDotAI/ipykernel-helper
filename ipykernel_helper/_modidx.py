@@ -25,5 +25,6 @@ d = { 'settings': { 'branch': 'main',
                                        'ipykernel_helper.core._signatures': ('core.html#_signatures', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.load_ipython_extension': ( 'core.html#load_ipython_extension',
                                                                                          'ipykernel_helper/core.py'),
+                                       'ipykernel_helper.core.read_url': ('core.html#read_url', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.run_cmd': ('core.html#run_cmd', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.transient': ('core.html#transient', 'ipykernel_helper/core.py')}}}
