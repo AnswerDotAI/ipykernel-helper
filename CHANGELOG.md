@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.7
+
+### New Features
+
+- Add `read_url` ([#7](https://github.com/AnswerDotAI/ipykernel-helper/issues/7))
+
+
 ## 0.0.6
 
 ### New Features
