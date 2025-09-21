@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.8
+
+### New Features
+
+- Add `_get_info`; improve `read_url` ([#8](https://github.com/AnswerDotAI/ipykernel-helper/issues/8))
+
+
 ## 0.0.7
 
 ### New Features
