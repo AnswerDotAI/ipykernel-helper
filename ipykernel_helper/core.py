@@ -182,6 +182,7 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
     "Custom formatter for ?? output"
     orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
                                detail_level=detail_level, omit_sections=omit_sections)
+    if detail_level==0: return orig
     info_dict = self.info(obj, oname=oname, info=info, detail_level=detail_level)
     out = []
     if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
