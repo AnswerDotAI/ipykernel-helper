@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.11
+
+### New Features
+
+- Read whole section when using anchor fragment in `read_url` ([#9](https://github.com/AnswerDotAI/ipykernel-helper/issues/9))
+
+
 ## 0.0.10
 
 ### New Features
