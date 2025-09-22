@@ -164,15 +164,26 @@ def read_url(
     from bs4 import BeautifulSoup
     
     res = httpx.get(url, follow_redirects=True).raise_for_status().text
+    soup = BeautifulSoup(res, "html.parser")
+    
     if selector:
-        sections = BeautifulSoup(res).select(selector)
+        sections = soup.select(selector)
         if sections: res = '\n\n'.join(str(section) for section in sections)
         else: res = ''
     elif extract_section:
         parsed = urlparse(url)
         if parsed.fragment:
-            section = BeautifulSoup(res).find(id=parsed.fragment)
-            if section: res = str(section)
+            section = soup.find(id=parsed.fragment)
+            if section:
+                tag_name = section.name
+                elements = [section]
+                current = section.next_sibling
+                while current:
+                    if hasattr(current, 'name') and current.name == tag_name: break
+                    elements.append(current)
+                    current = current.next_sibling
+                res = ''.join(str(el) for el in elements)
+            else: res = ''
     if as_md: return get_md(res)
     return res
 
