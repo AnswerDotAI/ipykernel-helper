@@ -30,4 +30,5 @@ d = { 'settings': { 'branch': 'main',
                                                                                          'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.read_url': ('core.html#read_url', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.run_cmd': ('core.html#run_cmd', 'ipykernel_helper/core.py'),
+                                       'ipykernel_helper.core.scrape_url': ('core.html#scrape_url', 'ipykernel_helper/core.py'),
                                        'ipykernel_helper.core.transient': ('core.html#transient', 'ipykernel_helper/core.py')}}}
