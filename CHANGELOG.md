@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.12
+
+### New Features
+
+- Use cloudscraper ([#10](https://github.com/AnswerDotAI/ipykernel-helper/issues/10))
+
+
 ## 0.0.11
 
 ### New Features
