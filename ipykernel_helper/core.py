@@ -166,7 +166,9 @@ def read_url(
     from urllib.parse import urlparse
     from bs4 import BeautifulSoup
     
-    res = scrape_url(url).text
+    o = scrape_url(url)
+    res, ctype = o.text, o.headers.get('content-type').split(';')[0]
+
     soup = BeautifulSoup(res, "html.parser")
     
     if selector:
@@ -187,7 +189,7 @@ def read_url(
                     current = current.next_sibling
                 res = ''.join(str(el) for el in elements)
             else: res = ''
-    if as_md: return get_md(res)
+    if as_md and ctype == 'text/html': return get_md(res)
     return res
 
 # %% ../nbs/00_core.ipynb
