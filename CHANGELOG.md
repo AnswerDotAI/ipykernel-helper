@@ -2,6 +2,14 @@
 
 <!-- do not remove -->
 
+
+## 0.0.13
+
+### Bugs Squashed
+
+- fix `read_url` for non-html content ([#11](https://github.com/AnswerDotAI/ipykernel-helper/pull/11)), thanks to [@KeremTurgutlu](https://github.com/KeremTurgutlu)
+
+
 ## 0.0.12
 
 ### New Features
