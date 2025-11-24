@@ -15,6 +15,7 @@ from collections.abc import Mapping
 from textwrap import dedent
 from cloudscraper import create_scraper
 from toolslm.funccall import *
+from ast import literal_eval
 
 import typing,warnings,re
 
@@ -104,8 +105,11 @@ def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
 @patch
 def get_vars(self:InteractiveShell, vs:list):
     "Get variables from namespace."
+    def _sup(v):
+        try: literal_eval(repr(v)); return True
+        except: return False
     ns = self.user_ns
-    return {v:ns[v] for v in vs if v in ns}
+    return {v:ns[v] for v in vs if v in ns and _sup(ns[v])}
 
 # %% ../nbs/00_core.ipynb
 def _get_schema(ns: dict, t):
