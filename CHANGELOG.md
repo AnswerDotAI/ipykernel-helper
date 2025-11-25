@@ -2,6 +2,12 @@
 
 <!-- do not remove -->
 
+## 0.0.14
+
+### New Features
+
+- add literal option to `get_vars` and fallback to str ([#14](https://github.com/AnswerDotAI/ipykernel-helper/pull/14)), thanks to [@KeremTurgutlu](https://github.com/KeremTurgutlu)
+
 
 ## 0.0.13
 
