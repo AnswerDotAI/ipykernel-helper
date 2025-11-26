@@ -16,8 +16,9 @@ from textwrap import dedent
 from cloudscraper import create_scraper
 from toolslm.funccall import *
 from ast import literal_eval
+from urllib.parse import urlparse, urljoin
 
-import typing,warnings,re
+import typing,warnings,re,os,html2text
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.completer import ProvisionalCompleterWarning
@@ -160,40 +161,68 @@ def get_md(cts):
 def scrape_url(url): return create_scraper().get(url)
 
 # %% ../nbs/00_core.ipynb
-def read_url(
-    url:str, # URL to read
-    as_md:bool=True, # Convert HTML to Markdown?
-    extract_section:bool=True, # If url has an anchor, return only that section
-    selector:str=None # Select section(s) using BeautifulSoup.select (overrides extract_section)
-):
-    "Read URL and return contents"
-    from urllib.parse import urlparse
-    from bs4 import BeautifulSoup
-    
-    o = scrape_url(url)
-    res, ctype = o.text, o.headers.get('content-type').split(';')[0]
+def _get_math_mode():
+    v = os.getenv('USE_KATEX', '')
+    if v.lower() in {'0', 'false', 'none', ''}: return None
+    return 'dollar' if v.lower().startswith('d') else 'safe'
 
-    soup = BeautifulSoup(res, "html.parser")
+# %% ../nbs/00_core.ipynb
+def _convert_math(soup, mode):
+    for math in soup.find_all('math'):
+        annot = math.find('annotation', {'encoding': 'application/x-tex'})
+        if not annot: continue
+        tex,display = annot.text.strip(), math.get('display') == 'block'
+        if mode == 'dollar': wrap = f'$${tex}$$' if display else f'${tex}$'
+        else: wrap = f'$${tex}$$' if display else f'\({tex}\)'
+        math.replace_with(wrap)
+
+# %% ../nbs/00_core.ipynb
+def _absolutify_imgs(md, base_url):
+    def fix(m):
+        alt,img_url = m.group(1),m.group(2)
+        if not img_url.startswith('http'): img_url = urljoin(base_url, img_url)
+        return f'![{alt}]({img_url})'
+    return re.sub(r'!\[(.*?)\]\((.*?)\)', fix, md)
+
+# %% ../nbs/00_core.ipynb
+def _aify_imgs(md): return re.sub(r'!\[(.*?)\]\((.*?)\)', r'![\1](\2#ai)', md)
+
+# %% ../nbs/00_core.ipynb
+def read_url(url:str, as_md:bool=True, extract_section:bool=True, selector:str=None, ai_img:bool=False):
+    "Read url from web"
+    from bs4 import BeautifulSoup
+    o = scrape_url(url)
+    res,ctype = o.text,o.headers.get('content-type').split(';')[0]
+    soup = BeautifulSoup(res, 'lxml')
     
-    if selector:
-        sections = soup.select(selector)
-        if sections: res = '\n\n'.join(str(section) for section in sections)
-        else: res = ''
+    if selector: res = '\n\n'.join(str(s) for s in soup.select(selector))
     elif extract_section:
         parsed = urlparse(url)
         if parsed.fragment:
             section = soup.find(id=parsed.fragment)
             if section:
-                tag_name = section.name
                 elements = [section]
                 current = section.next_sibling
                 while current:
-                    if hasattr(current, 'name') and current.name == tag_name: break
+                    if hasattr(current, 'name') and current.name == section.name: break
                     elements.append(current)
                     current = current.next_sibling
                 res = ''.join(str(el) for el in elements)
             else: res = ''
-    if as_md and ctype == 'text/html': return get_md(res)
+    else: res = str(soup)
+    
+    if mmode := _get_math_mode():
+        res_soup = BeautifulSoup(res, 'lxml')
+        _convert_math(res_soup, mmode)
+        res = str(res_soup)
+    
+    if as_md and ctype == 'text/html':
+        h = html2text.HTML2Text()
+        h.body_width = 0
+        res = _absolutify_imgs(h.handle(res), urljoin(url,s['href'] if (s:=soup.find('base')) else ''))
+        if mmode == 'safe': res = res.replace('\\\\(','\\(').replace('\\\\)','\\)')
+        
+    if ai_img: res = _aify_imgs(res)
     return res
 
 # %% ../nbs/00_core.ipynb
