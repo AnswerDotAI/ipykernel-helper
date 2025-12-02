@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.15
+
+### New Features
+
+- enhance read_url ([#15](https://github.com/AnswerDotAI/ipykernel-helper/pull/15)), thanks to [@RensDimmendaal](https://github.com/RensDimmendaal)
+
+
 ## 0.0.14
 
 ### New Features
