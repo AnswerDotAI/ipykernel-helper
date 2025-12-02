@@ -115,7 +115,7 @@ def get_vars(self:InteractiveShell, vs:list, literal=True):
 def _get_schema(ns: dict, t):
     "Check if tool `t` has errors."
     if t not in ns: return f"`{t}` not found. Did you run it?"
-    try: return get_schema(ns[t])
+    try: return {'type':'function', 'function':get_schema(ns[t], pname='parameters')}
     except Exception as e: return f"`{t}`: {e}."
 
 @patch
