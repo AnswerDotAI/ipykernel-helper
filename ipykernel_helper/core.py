@@ -181,6 +181,7 @@ def _absolutify_imgs(md, base_url):
     def fix(m):
         alt,img_url = m.group(1),m.group(2)
         if not img_url.startswith('http'): img_url = urljoin(base_url, img_url)
+        alt = alt.replace('\\','')
         return f'![{alt}]({img_url})'
     return re.sub(r'!\[(.*?)\]\((.*?)\)', fix, md)
 
