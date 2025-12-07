@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.16
+
+### Bugs Squashed
+
+- fix escape sequence in md img alt text ([#17](https://github.com/AnswerDotAI/ipykernel-helper/pull/17)), thanks to [@KeremTurgutlu](https://github.com/KeremTurgutlu)
+
+
 ## 0.0.15
 
 ### New Features
