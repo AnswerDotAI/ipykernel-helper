@@ -7,7 +7,7 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'read_url', 'load_ipy
 
 # %% ../nbs/00_core.ipynb
 from fastcore.meta import delegates
-from fastcore.utils import patch,dict2obj
+from fastcore.utils import dict2obj,nested_attr,patch
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -115,8 +115,13 @@ def get_vars(self:InteractiveShell, vs:list, literal=True):
 # %% ../nbs/00_core.ipynb
 def _get_schema(ns: dict, t):
     "Check if tool `t` has errors."
-    if t not in ns: return f"`{t}` not found. Did you run it?"
-    try: return {'type':'function', 'function':get_schema(ns[t], pname='parameters')}
+    f = nested_attr(ns, t)
+    if not f: return f"`{t}` not found. Did you run it?"
+    try:
+        return {'type':'function', 'function': get_schema(f, pname='parameters')}
+        schema = {'type':'function', 'function': get_schema(f, pname='parameters')}
+        schema['function']['name'] = t
+        return schema
     except Exception as e: return f"`{t}`: {e}."
 
 @patch
