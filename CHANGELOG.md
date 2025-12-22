@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.17
+
+### New Features
+
+- Add `fix_editable_priority` ([#20](https://github.com/AnswerDotAI/ipykernel-helper/issues/20))
+
+
 ## 0.0.16
 
 ### Bugs Squashed
