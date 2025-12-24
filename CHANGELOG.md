@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.18
+
+### New Features
+
+- Handle gh URLs ([#21](https://github.com/AnswerDotAI/ipykernel-helper/issues/21))
+
+
 ## 0.0.17
 
 ### New Features
