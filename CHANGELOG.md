@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.20
+
+### New Features
+
+- Use `skip_hidden` ([#23](https://github.com/AnswerDotAI/ipykernel-helper/issues/23))
+
+
 ## 0.0.19
 
 ### New Features
