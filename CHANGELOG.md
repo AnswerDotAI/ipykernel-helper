@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.19
+
+### New Features
+
+- Use new evalable param ([#22](https://github.com/AnswerDotAI/ipykernel-helper/issues/22))
+
+
 ## 0.0.18
 
 ### New Features
