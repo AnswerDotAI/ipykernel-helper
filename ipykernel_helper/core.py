@@ -9,6 +9,7 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
 # %% ../nbs/00_core.ipynb
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
+from fastcore.docments import sig_source
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -264,12 +265,20 @@ def fix_editable_priority():
 # %% ../nbs/00_core.ipynb
 @patch
 def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_level=0, omit_sections=()):
-    "Custom formatter for ?? output"
+    "Custom formatter for ? and ?? output"
     orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
                                detail_level=detail_level, omit_sections=omit_sections)
-    if detail_level==0: return orig
-    info_dict = self.info(obj, oname=oname, info=info, detail_level=detail_level)
+    info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
     out = []
+    if detail_level == 0:
+        src = info_dict.get('source')
+        if src and '\n' in src:
+            out.append(f"```python\n{sig_source(obj)}\n```")
+            if c:=info_dict.get('docstring'): out.append(c)
+            if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
+            if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
+            return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+        return orig
     if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
     if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
     return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
