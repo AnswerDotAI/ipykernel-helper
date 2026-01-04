@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.22
+
+### New Features
+
+- Use `sig_source` ([#24](https://github.com/AnswerDotAI/ipykernel-helper/issues/24))
+
+
 ## 0.0.21
 
 ### New Features
