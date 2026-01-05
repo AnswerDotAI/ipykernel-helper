@@ -9,7 +9,7 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
 # %% ../nbs/00_core.ipynb
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
-from fastcore.docments import sig_source,DocmentsText
+from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
@@ -271,7 +271,7 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
     info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
     out = []
     if detail_level==0:
-        out.append(f"```python\n{DocmentsText(obj)}\n```")
+        out.append(f"```python\n{DocmentText(obj)}\n```")
         if c:=info_dict.get('docstring'): out.append(c)
         if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
         if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
