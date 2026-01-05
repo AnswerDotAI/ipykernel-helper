@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.24
+
+### New Features
+
+- Use docments text for info ([#25](https://github.com/AnswerDotAI/ipykernel-helper/issues/25))
+
+
 ## 0.0.22
 
 ### New Features
