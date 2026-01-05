@@ -9,7 +9,8 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
 # %% ../nbs/00_core.ipynb
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
-from fastcore.docments import sig_source
+from fastcore.docments import sig_source,DocmentsText
+from fastcore.net import HTTP404NotFoundError
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -20,7 +21,6 @@ from toolslm.funccall import *
 from toolslm.xml import *
 from ast import literal_eval
 from urllib.parse import urlparse, urljoin
-from fastcore.net import HTTP404NotFoundError
 from ghapi.all import GhApi
 
 import typing,warnings,re,os,html2text,base64
