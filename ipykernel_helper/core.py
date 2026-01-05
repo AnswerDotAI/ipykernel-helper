@@ -213,7 +213,7 @@ def _convert_math(soup, mode):
         if not annot: continue
         tex,display = annot.text.strip(), math.get('display') == 'block'
         if mode == 'dollar': wrap = f'$${tex}$$' if display else f'${tex}$'
-        else: wrap = f'$${tex}$$' if display else f'\({tex}\)'
+        else: wrap = f'$${tex}$$' if display else fr'\({tex}\)'
         math.replace_with(wrap)
 
 # %% ../nbs/00_core.ipynb
