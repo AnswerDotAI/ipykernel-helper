@@ -267,15 +267,16 @@ def fix_editable_priority():
 def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_level=0, omit_sections=()):
     "Custom formatter for ? and ?? output"
     orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
-                               detail_level=detail_level, omit_sections=omit_sections)
-    info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
+                                detail_level=detail_level, omit_sections=omit_sections)
     out = []
     if detail_level==0:
-        out.append(f"```python\n{DocmentText(obj)}\n```")
-        if c:=info_dict.get('docstring'): out.append(c)
+        info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
+        out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
+        if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
         if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
         if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+    info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
     if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
     if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
     return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
