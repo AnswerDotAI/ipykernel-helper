@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.26
+
+### New Features
+
+- Improve `?` output formatting: wrap docstring in code block, optimize `info_dict` retrieval ([#26](https://github.com/AnswerDotAI/ipykernel-helper/issues/26))
+
+
 ## 0.0.25
 
 ### New Features
