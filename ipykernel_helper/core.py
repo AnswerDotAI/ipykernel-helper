@@ -171,7 +171,10 @@ def get_md(html, url='', mmode=None, ignore_links=False, ignore_images=False, ma
     return re.sub(r'\[code]\s*\n(.*?)\n\[/code]', lambda m: f'```\n{dedent(m.group(1))}\n```', res, flags=re.DOTALL).strip()
 
 # %% ../nbs/00_core.ipynb
-def scrape_url(url): return create_scraper().get(url)
+def scrape_url(url): 
+    o = create_scraper().get(url)
+    if not o.encoding or o.encoding == 'ISO-8859-1': o.encoding = 'utf-8'
+    return o
 
 # %% ../nbs/00_core.ipynb
 def _get_math_mode():
