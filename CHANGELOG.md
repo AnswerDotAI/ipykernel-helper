@@ -2,6 +2,17 @@
 
 <!-- do not remove -->
 
+## 0.0.27
+
+### New Features
+
+- Add eval expr ([#28](https://github.com/AnswerDotAI/ipykernel-helper/pull/28)), thanks to [@RensDimmendaal](https://github.com/RensDimmendaal)
+
+### Bugs Squashed
+
+- Fix UTF-8 encoding detection in scrape_url ([#27](https://github.com/AnswerDotAI/ipykernel-helper/pull/27)), thanks to [@ncoop57](https://github.com/ncoop57)
+
+
 ## 0.0.26
 
 ### New Features
