@@ -107,15 +107,27 @@ def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
                        'idx':s.index, 'params':[{'name':p.name, 'desc':p.description} for p in s.params]}
     return [_s(opt) for opt in ctx]
 
+# %% ../nbs/00_core.ipynb #808cd4c5
+def _maybe_eval(o):
+    try: literal_eval(repr(o)); return o
+    except: return str(o)
+
 # %% ../nbs/00_core.ipynb #eccab5a6
 @patch
 def get_vars(self:InteractiveShell, vs:list, literal=True):
     "Get variables from namespace."
     ns = self.user_ns
-    def _maybe_eval(o):
-        try: literal_eval(repr(o)); return o
-        except: return str(o)
     return {v:_maybe_eval(ns[v]) if literal else str(ns[v]) for v in vs if v in ns}
+
+# %% ../nbs/00_core.ipynb #ca702fed
+@patch
+def eval_exprs(self:InteractiveShell, vs:list, literal=True):
+    "Evaluate expressions in namespace."
+    ns,res = self.user_ns,{}
+    for v in vs:
+        try: res[v] = _maybe_eval(eval(v, ns)) if literal else str(eval(v, ns))
+        except Exception as e: res[v] = f'<error: {e}>'
+    return res
 
 # %% ../nbs/00_core.ipynb #68476272
 def _get_schema(ns: dict, t):
