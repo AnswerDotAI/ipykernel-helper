@@ -23,7 +23,7 @@ from ast import literal_eval
 from urllib.parse import urlparse, urljoin
 from ghapi.all import GhApi
 
-import typing,warnings,re,os,html2text,base64
+import typing,warnings,re,os,html2text,base64,traceback
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.completer import ProvisionalCompleterWarning
@@ -126,7 +126,7 @@ def eval_exprs(self:InteractiveShell, vs:list, literal=True):
     ns,res = self.user_ns,{}
     for v in vs:
         try: res[v] = _maybe_eval(eval(v, ns)) if literal else str(eval(v, ns))
-        except Exception as e: res[v] = f'<error: {e}>'
+        except Exception as e: res[v] = f'<error type="{type(e).__name__}" desc="{e}">\n{traceback.format_exc()}</error>'
     return res
 
 # %% ../nbs/00_core.ipynb #68476272
