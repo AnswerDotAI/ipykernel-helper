@@ -283,18 +283,20 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
     "Custom formatter for ? and ?? output"
     orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
                                 detail_level=detail_level, omit_sections=omit_sections)
-    out = []
-    if detail_level==0:
-        info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
-        out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
-        if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
+    try:
+        out = []
+        if detail_level==0:
+            info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
+            out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
+            if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
+            if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
+            if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
+            return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+        info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
+        if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
         if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
-        if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
-    info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
-    if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
-    if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
-    return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+    except Exception: return orig
 
 # %% ../nbs/00_core.ipynb #2e7ddf52
 def load_ipython_extension(ip):
