@@ -1,11 +1,34 @@
 [build-system]
-requires = ["setuptools>=64.0"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name="ipykernel-helper"
+dynamic = ["version"]
+description = "Helpers for ipykernel and friends"
+readme = "README.md"
 requires-python=">=3.9"
-dynamic = [ "keywords", "description", "version", "dependencies", "optional-dependencies", "readme", "license", "authors", "classifiers", "entry-points", "scripts", "urls"]
+license = {text = "Apache-2.0"}
+authors = [{name = "Jeremy Howard", email = "info@fast.ai"}]
+keywords = ['nbdev', 'jupyter', 'notebook', 'python']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = []
 
-[tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { file = "settings.ini" }, { file = "setup.py" }]
+[project.urls]
+Repository = "https://github.com/AnswerDotAI/ipykernel-helper"
+Documentation = "https://AnswerDotAI.github.io/ipykernel-helper"
+
+[project.entry-points.nbdev]
+ipykernel_helper = "ipykernel_helper._modidx:d"
+
+[tool.setuptools.dynamic]
+version = {attr = "ipykernel_helper.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["ipykernel_helper"]
+
+[tool.nbdev]
+custom_sidebar = false
