@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = []
+dependencies = ["fastcore>=1.12.2","toolslm>=0.3.13","jedi","ipython","ipykernel","beautifulsoup4","lxml","html2text","cloudscraper","ghapi"]
 
 [project.urls]
 Repository = "https://github.com/AnswerDotAI/ipykernel-helper"
