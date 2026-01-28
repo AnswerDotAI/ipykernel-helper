@@ -3,19 +3,16 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name="ipykernel-helper"
+name = "ipykernel-helper"
 dynamic = ["version"]
 description = "Helpers for ipykernel and friends"
 readme = "README.md"
-requires-python=">=3.9"
+requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
 authors = [{name = "Jeremy Howard", email = "info@fast.ai"}]
 keywords = ['nbdev', 'jupyter', 'notebook', 'python']
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-]
-dependencies = ["fastcore>=1.12.2","toolslm>=0.3.13","jedi","ipython","ipykernel","beautifulsoup4","lxml","html2text","cloudscraper","ghapi"]
+classifiers = ["Natural Language :: English", "Intended Audience :: Developers", "Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3 :: Only"]
+dependencies = ['fastcore>=1.12.2', 'toolslm>=0.3.13', 'jedi', 'ipython', 'ipykernel', 'beautifulsoup4', 'lxml', 'html2text', 'cloudscraper', 'ghapi']
 
 [project.urls]
 Repository = "https://github.com/AnswerDotAI/ipykernel-helper"
