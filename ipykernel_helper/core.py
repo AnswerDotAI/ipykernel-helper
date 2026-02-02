@@ -132,15 +132,15 @@ def eval_exprs(self:InteractiveShell, vs:list, literal=True):
 # %% ../nbs/00_core.ipynb #68476272
 def _get_schema(ns: dict, t):
     "Check if tool `t` has errors."
-    if t not in ns: return f"`{t}` not found. Did you run it?"
-    try: return {'type':'function', 'function':get_schema(ns[t], pname='parameters', evalable=True, skip_hidden=True)}
+    try: schema = get_schema_nm(t, ns, pname='parameters', evalable=True, skip_hidden=True, dot2dash=True)
+    except (KeyError, AttributeError): return f"`{t}` not found. Did you run it?"
     except Exception as e: return f"`{t}`: {e}."
+    return {'type':'function', 'function':schema}
 
 @patch
 def get_schemas(self:InteractiveShell, fs:list):
     "Get schemas from namespace."
-    ns = self.user_ns
-    return {f:_get_schema(ns,f) for f in fs}
+    return {f:_get_schema(self.user_ns, f) for f in fs}
 
 # %% ../nbs/00_core.ipynb #9e026fa5
 @patch
