@@ -7,6 +7,8 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
            'load_ipython_extension']
 
 # %% ../nbs/00_core.ipynb #9470a755
+from IPython.display import HTML
+from fasthtml.common import *
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
 from fastcore.docments import sig_source,DocmentText
@@ -23,7 +25,7 @@ from ast import literal_eval
 from urllib.parse import urlparse, urljoin
 from ghapi.all import GhApi
 
-import typing,warnings,re,os,html2text,base64
+import typing,warnings,re,os,html2text,base64,inspect
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.completer import ProvisionalCompleterWarning
@@ -298,8 +300,21 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
     except Exception: return orig
 
-# %% ../nbs/00_core.ipynb #2e7ddf52
+# %% ../nbs/00_core.ipynb #ff4984b9
+@patch
+async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
+    result = self._orig_run_cell_magic(magic_name, line, cell)
+    if inspect.iscoroutine(result): result = await result
+    if isinstance(result, FT): result = HTML(to_xml(result))
+    return result
+
+def _await_cell_magic(lines):
+    if lines and 'get_ipython().run_cell_magic(' in lines[0]: lines = ['await ' + lines[0]] + lines[1:]
+    return lines
+
 def load_ipython_extension(ip):
     from ipykernel_helper import transient,run_cmd
+    
     ns = ip.user_ns
     ns['read_url'],ns['transient'],ns['run_cmd'] = read_url,transient,run_cmd
+    ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
