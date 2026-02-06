@@ -2,12 +2,15 @@
 
 <!-- do not remove -->
 
-## 0.0.30
+## 0.0.31
 
 ### New Features
 
-- Workaround for ipykernel asyncio lock issue ([#32](https://github.com/AnswerDotAI/ipykernel-helper/issues/32))
 - Add async cell magic support with automatic FT→HTML conversion ([#31](https://github.com/AnswerDotAI/ipykernel-helper/issues/31))
+
+### Bugs Squashed
+
+- improve eval expr error msg ([#29](https://github.com/AnswerDotAI/ipykernel-helper/pull/29)), thanks to [@RensDimmendaal](https://github.com/RensDimmendaal)
 
 
 ## 0.0.29
