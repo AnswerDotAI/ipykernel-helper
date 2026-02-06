@@ -25,7 +25,7 @@ from ast import literal_eval
 from urllib.parse import urlparse, urljoin
 from ghapi.all import GhApi
 
-import typing,warnings,re,os,html2text,base64,traceback
+import typing,warnings,re,os,html2text,base64,inspect,traceback
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.completer import ProvisionalCompleterWarning
