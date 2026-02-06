@@ -314,11 +314,7 @@ def _await_cell_magic(lines):
 
 def load_ipython_extension(ip):
     from ipykernel_helper import transient,run_cmd
-    import contextlib
 
-    kernel = ip.kernel
-    # Workaround for issue introduced in https://github.com/ipython/ipykernel/pull/1430
-    if hasattr(kernel, '_main_asyncio_lock'): kernel._main_asyncio_lock = contextlib.nullcontext()
     ns = ip.user_ns
     ns['read_url'],ns['transient'],ns['run_cmd'] = read_url,transient,run_cmd
     ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
