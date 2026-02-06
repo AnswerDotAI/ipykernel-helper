@@ -2,6 +2,21 @@
 
 <!-- do not remove -->
 
+## 0.0.30
+
+### New Features
+
+- Workaround for ipykernel asyncio lock issue ([#32](https://github.com/AnswerDotAI/ipykernel-helper/issues/32))
+- Add async cell magic support with automatic FT→HTML conversion ([#31](https://github.com/AnswerDotAI/ipykernel-helper/issues/31))
+
+
+## 0.0.29
+
+### New Features
+
+- Support dotted names in `get_schemas` for object attribute access ([#30](https://github.com/AnswerDotAI/ipykernel-helper/issues/30))
+
+
 ## 0.0.28
 
 ### New Features
@@ -10,7 +25,7 @@
 
 ### Bugs Squashed
 
-- Fix UTF-8 encoding detection in scrape_url ([#27](https://github.com/AnswerDotAI/ipykernel-helper/pull/27)), thanks to [@ncoop57](https://github.com/ncoop57)
+- Fix UTF-8 encoding detection in `scrape_url` ([#27](https://github.com/AnswerDotAI/ipykernel-helper/pull/27)), thanks to [@ncoop57](https://github.com/ncoop57)
 
 
 ## 0.0.26

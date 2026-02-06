@@ -7,6 +7,8 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
            'load_ipython_extension']
 
 # %% ../nbs/00_core.ipynb #9470a755
+from IPython.display import HTML
+from fasthtml.common import *
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
 from fastcore.docments import sig_source,DocmentText
@@ -132,15 +134,15 @@ def eval_exprs(self:InteractiveShell, vs:list, literal=True):
 # %% ../nbs/00_core.ipynb #68476272
 def _get_schema(ns: dict, t):
     "Check if tool `t` has errors."
-    if t not in ns: return f"`{t}` not found. Did you run it?"
-    try: return {'type':'function', 'function':get_schema(ns[t], pname='parameters', evalable=True, skip_hidden=True)}
+    try: schema = get_schema_nm(t, ns, pname='parameters', evalable=True, skip_hidden=True, dot2dash=True)
+    except (KeyError, AttributeError): return f"`{t}` not found. Did you run it?"
     except Exception as e: return f"`{t}`: {e}."
+    return {'type':'function', 'function':schema}
 
 @patch
 def get_schemas(self:InteractiveShell, fs:list):
     "Get schemas from namespace."
-    ns = self.user_ns
-    return {f:_get_schema(ns,f) for f in fs}
+    return {f:_get_schema(self.user_ns, f) for f in fs}
 
 # %% ../nbs/00_core.ipynb #9e026fa5
 @patch
@@ -283,21 +285,40 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
     "Custom formatter for ? and ?? output"
     orig = self._orig__get_info(obj, oname=oname, formatter=formatter, info=info,
                                 detail_level=detail_level, omit_sections=omit_sections)
-    out = []
-    if detail_level==0:
-        info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
-        out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
-        if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
+    try:
+        out = []
+        if detail_level==0:
+            info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
+            out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
+            if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
+            if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
+            if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
+            return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+        info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
+        if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
         if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
-        if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
-    info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
-    if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
-    if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
-    return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
+    except Exception: return orig
 
-# %% ../nbs/00_core.ipynb #2e7ddf52
+# %% ../nbs/00_core.ipynb #ff4984b9
+@patch
+async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
+    result = self._orig_run_cell_magic(magic_name, line, cell)
+    if inspect.iscoroutine(result): result = await result
+    if isinstance(result, FT): result = HTML(to_xml(result))
+    return result
+
+def _await_cell_magic(lines):
+    if lines and 'get_ipython().run_cell_magic(' in lines[0]: lines = ['await ' + lines[0]] + lines[1:]
+    return lines
+
 def load_ipython_extension(ip):
     from ipykernel_helper import transient,run_cmd
+    import contextlib
+
+    kernel = ip.kernel
+    # Workaround for issue introduced in https://github.com/ipython/ipykernel/pull/1430
+    if hasattr(kernel, '_main_asyncio_lock'): kernel._main_asyncio_lock = contextlib.nullcontext()
     ns = ip.user_ns
     ns['read_url'],ns['transient'],ns['run_cmd'] = read_url,transient,run_cmd
+    ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
