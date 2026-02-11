@@ -146,14 +146,13 @@ def get_schemas(self:InteractiveShell, fs:list):
 
 # %% ../nbs/00_core.ipynb #2646fd8c
 def _tool_info(ns, f):
-    try: return DocmentText(obj:=eval(f, ns), docstring=False)._repr_markdown_() + f"\n\n```\n{(obj.__doc__ or '')}\n```"
+    try: return DocmentText(obj:=resolve_nm(f, ns), docstring=False)._repr_markdown_() + f"\n\n```\n{(obj.__doc__ or '')}\n```"
     except Exception as e: return f'`{f}`: {e}'
 
 @patch
 def get_tool_info(self:InteractiveShell, fs:list):
     "Get ?-style signature + docstring and schema for tools"
     return {f: {'sig': _tool_info(self.user_ns, f), 'schema': _get_schema(self.user_ns, f)} for f in fs}
-
 
 # %% ../nbs/00_core.ipynb #9e026fa5
 @patch
