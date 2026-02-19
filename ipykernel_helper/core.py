@@ -7,7 +7,6 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
            'load_ipython_extension']
 
 # %% ../nbs/00_core.ipynb #9470a755
-from IPython.display import HTML
 from fasthtml.common import *
 from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
@@ -234,7 +233,8 @@ def _convert_math(soup, mode):
         math.replace_with(wrap)
 
 # %% ../nbs/00_core.ipynb #7a0536e7
-def read_gh_repo(owner, repo, ref=None, path=''):
+@llmtool
+def read_gh_repo(owner:str, repo:str, ref:str=None, path:str=''):
     "Read GitHub repo info: description, file list, and README"
     api = GhApi()
     info = api.repos.get(owner, repo)
@@ -251,7 +251,14 @@ def read_gh_repo(owner, repo, ref=None, path=''):
     return '\n'.join(res)
 
 # %% ../nbs/00_core.ipynb #d5c677e7
-def read_url(url:str, as_md:bool=True, extract_section:bool=True, selector:str=None, ai_img:bool=False):
+@llmtool
+def read_url(
+    url:str, # URL to read
+    as_md:bool=True, # Convert HTML to markdown
+    extract_section:bool=True, # Extract section matching URL fragment or selector
+    selector:str=None, # CSS selector to extract specific content
+    ai_img:bool=False # Add #ai suffix to image URLs
+):
     "Read url from web"
     from bs4 import BeautifulSoup
     gh = parse_gh_url(url)
@@ -278,6 +285,11 @@ def fix_editable_priority():
     from importlib.machinery import PathFinder
     try: sys.meta_path.append(sys.meta_path.pop(sys.meta_path.index(PathFinder)))
     except ValueError: pass
+
+# %% ../nbs/00_core.ipynb #e441d8a8
+@patch
+def _repr_markdown_(self:Markdown):
+    return f'<div class="prose">\n\n{self.data}\n\n</div>'
 
 # %% ../nbs/00_core.ipynb #cf893c28
 @patch
@@ -316,5 +328,5 @@ def load_ipython_extension(ip):
     from ipykernel_helper import transient,run_cmd
 
     ns = ip.user_ns
-    ns['read_url'],ns['transient'],ns['run_cmd'] = read_url,transient,run_cmd
+    ns['read_gh_repo'], ns['read_url'],ns['transient'],ns['run_cmd'] = read_gh_repo,read_url,transient,run_cmd
     ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
