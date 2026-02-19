@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.32
+
+### New Features
+
+- Add @llmtool to `read_gh_repo`/`read_url`, wrap Markdown repr in prose div, export `read_gh_repo` in extension ([#35](https://github.com/AnswerDotAI/ipykernel-helper/issues/35))
+
+
 ## 0.0.31
 
 ### New Features
