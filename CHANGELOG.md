@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.33
+
+### New Features
+
+- Add `__repr__` to DisplayObject for readable display of data/url/filename ([#36](https://github.com/AnswerDotAI/ipykernel-helper/issues/36))
+
+
 ## 0.0.32
 
 ### New Features
