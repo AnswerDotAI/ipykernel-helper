@@ -291,6 +291,15 @@ def fix_editable_priority():
 def _repr_markdown_(self:Markdown):
     return f'<div class="prose">\n\n{self.data}\n\n</div>'
 
+# %% ../nbs/00_core.ipynb #10d99f58
+from IPython.display import TextDisplayObject,DisplayObject
+
+# %% ../nbs/00_core.ipynb #a758340e
+@patch
+def __repr__(self:DisplayObject):
+    s = self.data or self.url or self.filename
+    return f"{type(self).__name__}({s})"
+
 # %% ../nbs/00_core.ipynb #cf893c28
 @patch
 def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_level=0, omit_sections=()):
