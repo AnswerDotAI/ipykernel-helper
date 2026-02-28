@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.34
+
+### New Features
+
+- Truncate large non-str display obj reprs ([#37](https://github.com/AnswerDotAI/ipykernel-helper/issues/37))
+
+
 ## 0.0.33
 
 ### New Features
