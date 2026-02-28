@@ -12,6 +12,7 @@ from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
+from fastcore.xtras import truncstr
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -298,6 +299,7 @@ from IPython.display import TextDisplayObject,DisplayObject
 @patch
 def __repr__(self:DisplayObject):
     s = self.data or self.url or self.filename
+    if not isinstance(s, str): s = truncstr(str(s), 30)
     return f"{type(self).__name__}({s})"
 
 # %% ../nbs/00_core.ipynb #cf893c28
