@@ -299,6 +299,7 @@ from IPython.display import TextDisplayObject,DisplayObject
 @patch
 def __repr__(self:DisplayObject):
     s = self.data or self.url or self.filename
+    if s is None: return None
     if not isinstance(s, str): s = truncstr(str(s), 30)
     return f"{type(self).__name__}({s})"
 
