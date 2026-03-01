@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.35
+
+### Bugs Squashed
+
+- return None in repr ([#38](https://github.com/AnswerDotAI/ipykernel-helper/issues/38))
+
+
 ## 0.0.34
 
 ### New Features
