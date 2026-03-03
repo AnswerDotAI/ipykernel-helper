@@ -12,7 +12,7 @@ from fastcore.meta import delegates
 from fastcore.utils import patch,dict2obj
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
-from fastcore.xtras import truncstr
+from fastcore.xtras import truncstr,maybe_await
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -337,8 +337,6 @@ def _await_cell_magic(lines):
     return lines
 
 def load_ipython_extension(ip):
-    from ipykernel_helper import transient,run_cmd
-
     ns = ip.user_ns
-    ns['read_gh_repo'], ns['read_url'],ns['transient'],ns['run_cmd'] = read_gh_repo,read_url,transient,run_cmd
+    for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await'): ns[o] = globals()[o]
     ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
