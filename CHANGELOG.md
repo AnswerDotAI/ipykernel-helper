@@ -4,7 +4,9 @@
 
 ## 0.0.36
 
+### New Features
 
+- Add `maybe_await` ([#39](https://github.com/AnswerDotAI/ipykernel-helper/issues/39))
 
 
 ## 0.0.35
