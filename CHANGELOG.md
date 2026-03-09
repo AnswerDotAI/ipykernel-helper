@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.37
+
+### New Features
+
+- Add dynamic signature help with `_sig_dyn` fallback and `_param_idx` tokenizer ([#40](https://github.com/AnswerDotAI/ipykernel-helper/issues/40))
+
+
 ## 0.0.36
 
 ### New Features
