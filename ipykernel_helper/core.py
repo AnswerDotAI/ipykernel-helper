@@ -24,8 +24,9 @@ from toolslm.xml import *
 from ast import literal_eval
 from urllib.parse import urlparse, urljoin
 from ghapi.all import GhApi
+from io import StringIO
 
-import typing,warnings,re,os,html2text,base64,inspect,traceback
+import typing,warnings,re,os,html2text,base64,inspect,traceback,tokenize
 
 from IPython.core.interactiveshell import InteractiveShell
 from IPython.core.completer import ProvisionalCompleterWarning
@@ -95,33 +96,19 @@ def ranked_complete(self:InteractiveShell, code, line_no=None, col_no=None):
     # Remove dunder vars, unless the user seems to be looking for them explicitly
     return [_c(c) for c in cs if not c.text.startswith('__') or '__' in code]
 
-# %% ../nbs/00_core.ipynb #afad2cb1
-def _signatures(ns, s, line, col):
-    ctx = Interpreter(s, [ns]).get_signatures(line, col)
-    if not ctx: ctx = jscript(s).get_signatures(line, col)
-    return ctx
-
-@patch
-def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
-    ns = self.user_ns
-    ctx = _signatures(ns, code, line=line_no, col=col_no)
-    def _s(s): return {'label':s.description,'typ':s.type, 'mod':s.module_name, 'doc':s.docstring(),
-                       'idx':s.index, 'params':[{'name':p.name, 'desc':p.description} for p in s.params]}
-    return [_s(opt) for opt in ctx]
-
-# %% ../nbs/00_core.ipynb #808cd4c5
+# %% ../nbs/00_core.ipynb #192310a4
 def _maybe_eval(o):
     try: literal_eval(repr(o)); return o
     except: return str(o)
 
-# %% ../nbs/00_core.ipynb #eccab5a6
+# %% ../nbs/00_core.ipynb #b3613f76
 @patch
 def get_vars(self:InteractiveShell, vs:list, literal=True):
     "Get variables from namespace."
     ns = self.user_ns
     return {v:_maybe_eval(ns[v]) if literal else str(ns[v]) for v in vs if v in ns}
 
-# %% ../nbs/00_core.ipynb #ca702fed
+# %% ../nbs/00_core.ipynb #ed89fa06
 @patch
 def eval_exprs(self:InteractiveShell, vs:list, literal=True):
     "Evaluate expressions in namespace."
@@ -131,7 +118,7 @@ def eval_exprs(self:InteractiveShell, vs:list, literal=True):
         except Exception as e: res[v] = f'<error type="{type(e).__name__}" desc="{e}">\n{traceback.format_exc()}</error>'
     return res
 
-# %% ../nbs/00_core.ipynb #68476272
+# %% ../nbs/00_core.ipynb #d4195d94
 def _get_schema(ns: dict, t):
     "Check if tool `t` has errors."
     try: schema = get_schema_nm(t, ns, pname='parameters', evalable=True, skip_hidden=True, dot2dash=True)
@@ -144,11 +131,65 @@ def get_schemas(self:InteractiveShell, fs:list):
     "Get schemas from namespace."
     return {f:_get_schema(self.user_ns, f) for f in fs}
 
-# %% ../nbs/00_core.ipynb #9e026fa5
+# %% ../nbs/00_core.ipynb #281193c9
 @patch
 def xpush(self:InteractiveShell, interactive=False, **kw):
     "Like `push`, but with kwargs"
     self.push(kw, interactive=interactive)
+
+# %% ../nbs/00_core.ipynb #50ec6221
+def _signatures(ns, s, line, col):
+    ctx = Interpreter(s, [ns]).get_signatures(line, col)
+    if not ctx: ctx = jscript(s).get_signatures(line, col)
+    return ctx
+
+@patch
+def _sig_jedi(self:InteractiveShell, code, line_no=None, col_no=None):
+    ns = self.user_ns
+    ctx = _signatures(ns, code, line=line_no, col=col_no)
+    if ctx:
+        def _s(s): return {'label':s.description,'typ':s.type, 'mod':s.module_name, 'doc':s.docstring(),
+                           'idx':s.index, 'params':[{'name':p.name, 'desc':p.description} for p in s.params]}
+        return [_s(opt) for opt in ctx]
+    return []
+
+# %% ../nbs/00_core.ipynb #a7fa20ce
+def _param_idx(code, cursor_pos):
+    toks = []
+    def op(s): return s == tokenize.OP
+    g = tokenize.generate_tokens(StringIO(code[:cursor_pos]).readline)
+    while True:
+        try: toks.append(next(g))
+        except (tokenize.TokenError, StopIteration): break
+    depth,idx = 0,0
+    for t in reversed(toks):
+        if op(t.type) and t.string in ')]}': depth += 1
+        elif op(t.type) and t.string in '([{':
+            if depth == 0: return idx
+            depth -= 1
+        elif op(t.type) and t.string == ',' and depth == 0: idx += 1
+    return 0
+
+# %% ../nbs/00_core.ipynb #af7f189f
+@patch
+def _sig_dyn(self:InteractiveShell, code, line_no=None, col_no=None):
+    from IPython.utils.tokenutil import token_at_cursor
+    lines = code.splitlines()
+    cursor_pos = sum(len(l)+1 for l in lines[:line_no-1])+col_no if line_no else len(code)
+    name = token_at_cursor(code, cursor_pos)
+    info = self._object_find(name)
+    if not (info.found and callable(info.obj)): return []
+    try: sig = inspect.signature(info.obj)
+    except (ValueError, TypeError): return []
+    return [{'label':name, 'typ':type(info.obj).__name__, 'mod':getattr(info.obj,'__module__',''),
+             'doc':getattr(info.obj,'__doc__','') or '', 'idx':_param_idx(code, cursor_pos),
+             'params':[{'name':p.name, 'desc':str(p)} for p in sig.parameters.values()]}]
+
+# %% ../nbs/00_core.ipynb #0c1e6cc7
+@patch
+def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
+    "Get signature help for code at cursor position using dynamic analysis or jedi as a backup."
+    return self._sig_dyn(code, line_no, col_no=col_no) or self._sig_jedi(code, line_no, col_no=col_no)
 
 # %% ../nbs/00_core.ipynb #d4a073da
 @patch
