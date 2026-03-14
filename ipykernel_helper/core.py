@@ -365,6 +365,15 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
     except Exception: return orig
 
+# %% ../nbs/00_core.ipynb #290963a0
+from IPython.core.ultratb import SyntaxTB
+
+# %% ../nbs/00_core.ipynb #eaa7a5e8
+@patch
+def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, context=5):
+    if hasattr(evalue, 'msg') and not isinstance(evalue.msg, str): evalue.msg = str(evalue.msg)
+    return self._orig_structured_traceback(etype, evalue, etb, tb_offset=tb_offset, context=context)
+
 # %% ../nbs/00_core.ipynb #ff4984b9
 @patch
 async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
