@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.38
+
+### New Features
+
+- Add workaround for `structured_traceback` bug ([#41](https://github.com/AnswerDotAI/ipykernel-helper/issues/41))
+
+
 ## 0.0.37
 
 ### New Features
