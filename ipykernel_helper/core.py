@@ -374,6 +374,12 @@ def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, cont
     if hasattr(evalue, 'msg') and not isinstance(evalue.msg, str): evalue.msg = str(evalue.msg)
     return self._orig_structured_traceback(etype, evalue, etb, tb_offset=tb_offset, context=context)
 
+# %% ../nbs/00_core.ipynb #33cb1440
+if '_orig_getfile' not in globals():
+    _orig_getfile = inspect.getfile
+    def _getfile(obj): return str(_orig_getfile(obj))
+    inspect.getfile = _getfile
+
 # %% ../nbs/00_core.ipynb #ff4984b9
 @patch
 async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
