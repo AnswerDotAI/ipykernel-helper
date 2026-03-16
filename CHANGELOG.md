@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.39
+
+### New Features
+
+- Patch inspect.getfile to ensure return value is always a str ([#42](https://github.com/AnswerDotAI/ipykernel-helper/issues/42))
+
+
 ## 0.0.38
 
 ### New Features
