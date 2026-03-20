@@ -9,7 +9,7 @@ __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 're
 # %% ../nbs/00_core.ipynb #9470a755
 from fasthtml.common import *
 from fastcore.meta import delegates
-from fastcore.utils import patch,dict2obj
+from fastcore.utils import patch,patch_to,dict2obj
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
 from fastcore.xtras import truncstr,maybe_await
@@ -369,19 +369,17 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
 from IPython.core.ultratb import SyntaxTB
 
 # %% ../nbs/00_core.ipynb #eaa7a5e8
-@patch
+@patch(once=True)
 def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, context=5):
     if hasattr(evalue, 'msg') and not isinstance(evalue.msg, str): evalue.msg = str(evalue.msg)
     return self._orig_structured_traceback(etype, evalue, etb, tb_offset=tb_offset, context=context)
 
 # %% ../nbs/00_core.ipynb #33cb1440
-if '_orig_getfile' not in globals():
-    _orig_getfile = inspect.getfile
-    def _getfile(obj): return str(_orig_getfile(obj))
-    inspect.getfile = _getfile
+@patch_to(inspect, nm="getfile", once=True)
+def _getfile(obj): return str(inspect._orig_getfile(obj))
 
 # %% ../nbs/00_core.ipynb #ff4984b9
-@patch
+@patch(once=True)
 async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
     result = self._orig_run_cell_magic(magic_name, line, cell)
     if inspect.iscoroutine(result): result = await result
@@ -395,4 +393,5 @@ def _await_cell_magic(lines):
 def load_ipython_extension(ip):
     ns = ip.user_ns
     for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await'): ns[o] = globals()[o]
-    ip.input_transformer_manager.line_transforms.append(_await_cell_magic)
+    lts = ip.input_transformer_manager.line_transforms
+    if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
