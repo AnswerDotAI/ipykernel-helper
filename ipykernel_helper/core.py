@@ -369,17 +369,17 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
 from IPython.core.ultratb import SyntaxTB
 
 # %% ../nbs/00_core.ipynb #eaa7a5e8
-@patch(once=True)
+@patch()
 def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, context=5):
     if hasattr(evalue, 'msg') and not isinstance(evalue.msg, str): evalue.msg = str(evalue.msg)
     return self._orig_structured_traceback(etype, evalue, etb, tb_offset=tb_offset, context=context)
 
 # %% ../nbs/00_core.ipynb #33cb1440
-@patch_to(inspect, nm="getfile", once=True)
+@patch_to(inspect, nm="getfile")
 def _getfile(obj): return str(inspect._orig_getfile(obj))
 
 # %% ../nbs/00_core.ipynb #ff4984b9
-@patch(once=True)
+@patch()
 async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
     result = self._orig_run_cell_magic(magic_name, line, cell)
     if inspect.iscoroutine(result): result = await result
