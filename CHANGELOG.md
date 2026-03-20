@@ -2,14 +2,7 @@
 
 <!-- do not remove -->
 
-## 0.0.40
-
-### New Features
-
-- Add idempotency guards via patch(once=True) and `patch_to` for inspect.getfile ([#43](https://github.com/AnswerDotAI/ipykernel-helper/issues/43))
-
-
-## 0.0.39
+## 0.0.41
 
 ### New Features
 
