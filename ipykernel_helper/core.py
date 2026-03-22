@@ -89,11 +89,10 @@ def ranked_complete(self:InteractiveShell, code, line_no=None, col_no=None):
     else: offset = len(code)
     cs = self.Completer.completions(code, offset)
     def _c(a):
-        res = dict2obj({attr: getattr(a, attr) for attr in dir(a) if attr[0]!='_'})
-        res['mod']= getattr(ns.get(a.text, None), '__module__', None)
+        res = dict2obj(text=a.text, type=str(a.type or ''), signature=str(getattr(a, 'signature', '') or ''), start=a.start, end=a.end)
+        res['mod'] = getattr(ns.get(a.text, None), '__module__', None)
         res['rank'] = _rank(res, s=code)
         return res
-    # Remove dunder vars, unless the user seems to be looking for them explicitly
     return [_c(c) for c in cs if not c.text.startswith('__') or '__' in code]
 
 # %% ../nbs/00_core.ipynb #192310a4
