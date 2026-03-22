@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.42
+
+### Bugs Squashed
+
+- Refactor `ranked_complete` to use explicit attrs in dict2obj instead of dynamic dir() lookup ([#44](https://github.com/AnswerDotAI/ipykernel-helper/issues/44))
+
+
 ## 0.0.41
 
 ### New Features
