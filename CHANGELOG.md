@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.43
+
+### New Features
+
+- In `finish_displayhook` add `__type` metadata ([#45](https://github.com/AnswerDotAI/ipykernel-helper/issues/45))
+
+
 ## 0.0.42
 
 ### Bugs Squashed
