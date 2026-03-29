@@ -35,6 +35,8 @@ from jedi import Interpreter, Script as jscript
 from IPython.core.display import DisplayObject
 from IPython.display import display,Markdown,HTML
 from IPython.core.oinspect import Inspector
+from IPython.core.displayhook import DisplayHook
+from ipykernel.displayhook import ZMQShellDisplayHook
 
 # %% ../nbs/00_core.ipynb #06cb0934
 warnings.filterwarnings('ignore', category=ProvisionalCompleterWarning)
@@ -342,6 +344,13 @@ def __repr__(self:DisplayObject):
     if s is None: return None
     if not isinstance(s, str): s = truncstr(str(s), 30)
     return f"{type(self).__name__}({s})"
+
+# %% ../nbs/00_core.ipynb #e8c1388b
+@patch
+def finish_displayhook(self:ZMQShellDisplayHook):
+    obj = self.shell.user_ns.get('_')
+    if obj is not None: self.msg['content']['metadata']['__type'] = type(obj).__qualname__
+    self._orig_finish_displayhook()
 
 # %% ../nbs/00_core.ipynb #cf893c28
 @patch
