@@ -395,7 +395,7 @@ async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
     return result
 
 def _await_cell_magic(lines):
-    if lines and 'get_ipython().run_cell_magic(' in lines[0]: lines = ['await ' + lines[0]] + lines[1:]
+    if lines and 'get_ipython().run_cell_magic(' in lines[0] and 'await ' not in lines[0]: lines = ['await ' + lines[0]] + lines[1:]
     return lines
 
 def load_ipython_extension(ip):
