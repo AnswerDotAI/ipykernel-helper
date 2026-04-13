@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.44
+
+### New Features
+
+- Avoid double-await in `_await_cell_magic` by skipping lines already prefixed with await ([#46](https://github.com/AnswerDotAI/ipykernel-helper/issues/46))
+
+
 ## 0.0.43
 
 ### New Features
