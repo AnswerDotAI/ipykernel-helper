@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.45
+
+### New Features
+
+- Add `_safe_sig` helper to gracefully handle unintrospectable function signatures ([#47](https://github.com/AnswerDotAI/ipykernel-helper/issues/47))
+
+
 ## 0.0.44
 
 ### New Features
