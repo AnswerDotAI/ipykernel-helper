@@ -50,6 +50,10 @@ def _safe_repr(obj, max_len=200):
     except Exception as e: return f"<repr error: {str(e)}>"
 
 # %% ../nbs/00_core.ipynb #1e600ee2
+def _safe_sig(v):
+    try: return str(signature(v))
+    except Exception: return '(...)'
+
 @patch
 def user_items(self:InteractiveShell, max_len=200, xtra_skip=()):
     "Get user-defined vars & funcs from namespace."
@@ -66,7 +70,7 @@ def user_items(self:InteractiveShell, max_len=200, xtra_skip=()):
                   if not k in ignore and k not in nsh}
     user_vars = {k:_safe_repr(v, max_len=max_len)
                  for k, v in user_items.items() if not k.startswith('_') and not isinstance(v, rm_types)}
-    user_fns = {k:str(signature(v)) for k, v in user_items.items()
+    user_fns = {k:_safe_sig(v) for k, v in user_items.items()
                 if isinstance(v, FunctionType) and v.__module__ == '__main__' and not k.startswith('__')}
     return user_vars,user_fns
 
