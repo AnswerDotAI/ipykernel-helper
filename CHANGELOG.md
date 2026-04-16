@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.46
+
+### Bugs Squashed
+
+- fix `_await_cell_magic` if await inside code ([#48](https://github.com/AnswerDotAI/ipykernel-helper/issues/48))
+
+
 ## 0.0.45
 
 ### New Features
