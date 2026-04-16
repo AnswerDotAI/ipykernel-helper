@@ -391,7 +391,7 @@ def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, cont
 def _getfile(obj): return str(inspect._orig_getfile(obj))
 
 # %% ../nbs/00_core.ipynb #ff4984b9
-@patch()
+@patch
 async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
     result = self._orig_run_cell_magic(magic_name, line, cell)
     if inspect.iscoroutine(result): result = await result
@@ -399,7 +399,7 @@ async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
     return result
 
 def _await_cell_magic(lines):
-    if lines and 'get_ipython().run_cell_magic(' in lines[0] and 'await ' not in lines[0]: lines = ['await ' + lines[0]] + lines[1:]
+    if lines and lines[0].lstrip().startswith('get_ipython().run_cell_magic('): lines[0] = f'await {lines[0]}'
     return lines
 
 def load_ipython_extension(ip):
