@@ -4,7 +4,7 @@
 
 # %% auto #0
 __all__ = ['transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 'read_gh_repo', 'read_url', 'fix_editable_priority',
-           'load_ipython_extension']
+           'call_tool', 'load_ipython_extension']
 
 # %% ../nbs/00_core.ipynb #9470a755
 from fasthtml.common import *
@@ -356,6 +356,11 @@ def finish_displayhook(self:ZMQShellDisplayHook):
     if obj is not None: self.msg['content']['metadata']['__type'] = type(obj).__qualname__
     self._orig_finish_displayhook()
 
+# %% ../nbs/00_core.ipynb #b671332c
+async def call_tool(func, kw):
+    "Call `func(**kw)` with `coerce_inputs`"
+    return await maybe_await(func(**coerce_inputs(func, kw)))
+
 # %% ../nbs/00_core.ipynb #cf893c28
 @patch
 def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_level=0, omit_sections=()):
@@ -404,6 +409,6 @@ def _await_cell_magic(lines):
 
 def load_ipython_extension(ip):
     ns = ip.user_ns
-    for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await'): ns[o] = globals()[o]
+    for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     lts = ip.input_transformer_manager.line_transforms
     if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
