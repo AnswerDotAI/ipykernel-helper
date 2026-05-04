@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.47
+
+### New Features
+
+- Add `call_tool` helper for invoking funcs with coerced inputs ([#49](https://github.com/AnswerDotAI/ipykernel-helper/issues/49))
+
+
 ## 0.0.46
 
 ### Bugs Squashed
