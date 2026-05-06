@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.48
+
+### New Features
+
+- Wrap all markdown output in prose div via DisplayFormatter patch ([#50](https://github.com/AnswerDotAI/ipykernel-helper/issues/50))
+
+
 ## 0.0.47
 
 ### New Features
