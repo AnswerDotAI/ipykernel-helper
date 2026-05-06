@@ -37,6 +37,7 @@ from IPython.display import display,Markdown,HTML
 from IPython.core.oinspect import Inspector
 from IPython.core.displayhook import DisplayHook
 from ipykernel.displayhook import ZMQShellDisplayHook
+from IPython.core.formatters import DisplayFormatter
 
 # %% ../nbs/00_core.ipynb #06cb0934
 warnings.filterwarnings('ignore', category=ProvisionalCompleterWarning)
@@ -333,10 +334,13 @@ def fix_editable_priority():
     try: sys.meta_path.append(sys.meta_path.pop(sys.meta_path.index(PathFinder)))
     except ValueError: pass
 
-# %% ../nbs/00_core.ipynb #e441d8a8
+# %% ../nbs/00_core.ipynb #6d5eebf0
 @patch
-def _repr_markdown_(self:Markdown):
-    return f'<div class="prose">\n\n{self.data}\n\n</div>'
+def format(self:DisplayFormatter, obj, include=None, exclude=None):
+    data,meta = self._orig_format(obj, include=include, exclude=exclude)
+    if 'text/markdown' in data and not data['text/markdown'].lstrip().startswith('<div class="prose">'):
+        data['text/markdown'] = f'<div class="prose">\n\n{data["text/markdown"]}\n\n</div>'
+    return data,meta
 
 # %% ../nbs/00_core.ipynb #10d99f58
 from IPython.display import TextDisplayObject,DisplayObject
