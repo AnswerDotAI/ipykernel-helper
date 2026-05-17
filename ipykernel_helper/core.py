@@ -338,8 +338,8 @@ def fix_editable_priority():
 @patch
 def format(self:DisplayFormatter, obj, include=None, exclude=None):
     data,meta = self._orig_format(obj, include=include, exclude=exclude)
-    if 'text/markdown' in data and not data['text/markdown'].lstrip().startswith('<div class="prose">'):
-        data['text/markdown'] = f'<div class="prose">\n\n{data["text/markdown"]}\n\n</div>'
+    if 'text/markdown' in data and not data['text/markdown'].lstrip().startswith('<div class="prose"'):
+        data['text/markdown'] = f'<div class="prose" markdown="1">\n\n{data["text/markdown"]}\n\n</div>'
     return data,meta
 
 # %% ../nbs/00_core.ipynb #10d99f58
