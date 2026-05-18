@@ -229,7 +229,7 @@ def get_md(html, url='', mmode=None, ignore_links=False, ignore_images=False, ma
     h.ignore_links, h.ignore_images, h.mark_code = ignore_links, ignore_images, mark_code
     res = _absolutify_imgs(h.handle(str(html)), url)
     if mmode == 'safe': res = res.replace(r'\\(',r'\(').replace(r'\\)',r'\)')
-    return re.sub(r'\[code]\s*\n(.*?)\n\[/code]', lambda m: f'```\n{dedent(m.group(1))}\n```', res, flags=re.DOTALL).strip()
+    return re.sub(r'\[code]\s*\n(.*?)\n\[/code]', lambda m: f'````\n{dedent(m.group(1))}\n````', res, flags=re.DOTALL).strip()
 
 # %% ../nbs/00_core.ipynb #18980edf
 def scrape_url(url): 
@@ -375,13 +375,13 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
         out = []
         if detail_level==0:
             info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
-            out.append(f"```python\n{DocmentText(obj, docstring=False)}\n```")
-            if c:=info_dict.get('docstring'): out.append(f'\n\n```\n{c}\n```\n\n')
+            out.append(f"````python\n{DocmentText(obj, docstring=False)}\n````")
+            if c:=info_dict.get('docstring'): out.append(f'\n\n````\n{c}\n````\n\n')
             if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
             if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
             return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
         info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
-        if c:=info_dict.get('source'): out.append(f"\n```python\n{dedent(c)}\n```")
+        if c:=info_dict.get('source'): out.append(f"\n````python\n{dedent(c)}\n````")
         if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
     except Exception: return orig
