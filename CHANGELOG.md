@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.50
+
+### New Features
+
+- Use quad backticks ([#51](https://github.com/AnswerDotAI/ipykernel-helper/issues/51))
+
+
 ## 0.0.49
 
 ### New Features
