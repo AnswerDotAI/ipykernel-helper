@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.51
+
+### New Features
+
+- Wrap HTML output of dataframe-like objects in prose div ([#52](https://github.com/AnswerDotAI/ipykernel-helper/issues/52))
+
+
 ## 0.0.50
 
 ### New Features
