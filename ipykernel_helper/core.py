@@ -364,13 +364,6 @@ def __repr__(self:DisplayObject):
     if not isinstance(s, str): s = truncstr(str(s), 30)
     return f"{type(self).__name__}({s})"
 
-# %% ../nbs/00_core.ipynb #e8c1388b
-@patch
-def finish_displayhook(self:ZMQShellDisplayHook):
-    obj = self.shell.user_ns.get('_')
-    if obj is not None: self.msg['content']['metadata']['__type'] = type(obj).__qualname__
-    self._orig_finish_displayhook()
-
 # %% ../nbs/00_core.ipynb #b671332c
 async def call_tool(func, kw):
     "Call `func(**kw)` with `coerce_inputs`"
@@ -427,3 +420,13 @@ def load_ipython_extension(ip):
     for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     lts = ip.input_transformer_manager.line_transforms
     if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
+
+    dh_cls = type(ip.displayhook)
+    _orig_write_format_data = dh_cls.write_format_data
+    def write_format_data(self, format_dict, md_dict=None):
+        obj = self.shell.user_ns.get('_')
+        if obj is not None:
+            if md_dict is None: md_dict = {}
+            md_dict['__type'] = type(obj).__qualname__
+        return _orig_write_format_data(self, format_dict, md_dict)
+    dh_cls.write_format_data = write_format_data
