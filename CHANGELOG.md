@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.52
+
+### Bugs Squashed
+
+- Move `__type` metadata injection from `finish_displayhook` to `write_format_data` ([#53](https://github.com/AnswerDotAI/ipykernel-helper/issues/53))
+
+
 ## 0.0.51
 
 ### New Features
