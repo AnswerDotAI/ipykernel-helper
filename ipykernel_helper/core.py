@@ -6,10 +6,11 @@ Docs: https://AnswerDotAI.github.io/ipykernel-helpercore.html.md"""
 
 # %% auto #0
 __all__ = ['prose_types', 'transient', 'run_cmd', 'get_md', 'scrape_url', 'gh_blob_to_raw', 'read_gh_repo', 'read_url',
-           'fix_editable_priority', 'call_tool', 'load_ipython_extension']
+           'fix_editable_priority', 'call_tool', 'info_md', 'load_ipython_extension']
 
 # %% ../nbs/00_core.ipynb #9470a755
 from fasthtml.common import *
+from pyskills import resolve
 from fastcore.meta import delegates
 from fastcore.utils import patch,patch_to,dict2obj
 from fastcore.docments import sig_source,DocmentText
@@ -118,11 +119,13 @@ def get_vars(self:InteractiveShell, vs:list, literal=True):
 
 # %% ../nbs/00_core.ipynb #ed89fa06
 @patch
-def eval_exprs(self:InteractiveShell, vs:list, literal=True):
+async def eval_exprs(self:InteractiveShell, vs:list, literal=True):
     "Evaluate expressions in namespace."
     ns,res = self.user_ns,{}
     for v in vs:
-        try: res[v] = _maybe_eval(eval(v, ns)) if literal else str(eval(v, ns))
+        try:
+            e = await maybe_await(eval(v, ns))
+            res[v] = _maybe_eval(e) if literal else str(e)
         except Exception as e: res[v] = f'<error type="{type(e).__name__}" desc="{e}">\n{traceback.format_exc()}</error>'
     return res
 
@@ -377,18 +380,28 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
                                 detail_level=detail_level, omit_sections=omit_sections)
     try:
         out = []
+        _,lineno = inspect.getsourcelines(obj)
         if detail_level==0:
             info_dict = self.info(obj, oname=oname, info=info, detail_level=0)
             out.append(f"````python\n{DocmentText(obj, docstring=False)}\n````")
-            if c:=info_dict.get('docstring'): out.append(f'\n\n````\n{c}\n````\n\n')
-            if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
+            if c:=info_dict.get('docstring'): out.append(f'````\n{c}\n````')
+            if c:=info_dict.get('file'): out.append(f"**File:** `{c}`; line: {lineno}")
             if c:=info_dict.get('type_name'): out.append(f"**Type:** {c}")
             return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
         info_dict = self.info(obj, oname=oname, info=info, detail_level=2)
         if c:=info_dict.get('source'): out.append(f"\n````python\n{dedent(c)}\n````")
-        if c:=info_dict.get('file'): out.append(f"**File:** `{c}`")
+        if c:=info_dict.get('file'): out.append(f"**File:** `{c}`; line: {lineno}")
         return {'text/markdown': '\n\n'.join(out), 'text/html': '', 'text/plain': orig['text/plain']}
     except Exception: return orig
+
+# %% ../nbs/00_core.ipynb #e0e6d147
+def info_md(
+    obj, # Object to get info for
+    source=False
+):
+    "With `source=False` same as ipython's `?`, otherwise same as `??`"
+    obj = resolve(obj)
+    return PrettyString(get_ipython().inspector._get_info(obj, '', detail_level=1 if source else 0)['text/markdown'])
 
 # %% ../nbs/00_core.ipynb #290963a0
 from IPython.core.ultratb import SyntaxTB
