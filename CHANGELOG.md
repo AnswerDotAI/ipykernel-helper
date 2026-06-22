@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.53
+
+### New Features
+
+- Add `info_md` helper and make `eval_exprs` async with await support ([#54](https://github.com/AnswerDotAI/ipykernel-helper/issues/54))
+
+
 ## 0.0.52
 
 ### Bugs Squashed
