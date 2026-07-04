@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.54
+
+### Bugs Squashed
+
+- Docstring not indented ([#55](https://github.com/AnswerDotAI/ipykernel-helper/issues/55))
+
+
 ## 0.0.53
 
 ### New Features
