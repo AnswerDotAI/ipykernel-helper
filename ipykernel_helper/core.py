@@ -358,6 +358,7 @@ def format(self:DisplayFormatter, obj, include=None, exclude=None):
 
 # %% ../nbs/00_core.ipynb #10d99f58
 from IPython.display import TextDisplayObject,DisplayObject
+from pathlib import PurePath
 
 # %% ../nbs/00_core.ipynb #a758340e
 @patch
@@ -366,6 +367,17 @@ def __repr__(self:DisplayObject):
     if s is None: return None
     if not isinstance(s, str): s = truncstr(str(s), 30)
     return f"{type(self).__name__}({s})"
+
+# %% ../nbs/00_core.ipynb #5a6b8ed2
+@patch
+def __init__(self:TextDisplayObject, data=None, url=None, filename=None, metadata=None):
+    "Like `DisplayObject.__init__`, but never auto-detects `data` as a URL/filename"
+    if isinstance(data, (Path, PurePath)): data = str(data)
+    self.url, self.filename, self.data = url, filename, data
+    if metadata is not None: self.metadata = metadata
+    elif self.metadata is None: self.metadata = {}
+    self.reload()
+    self._check_data()
 
 # %% ../nbs/00_core.ipynb #b671332c
 async def call_tool(func, kw):
