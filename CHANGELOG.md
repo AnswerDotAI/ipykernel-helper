@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.55
+
+### New Features
+
+- Patch `TextDisplayObject.__init__` to treat data as literal text, not auto-detected URL/filename ([#56](https://github.com/AnswerDotAI/ipykernel-helper/issues/56))
+
+
 ## 0.0.54
 
 ### Bugs Squashed
