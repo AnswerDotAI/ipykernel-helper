@@ -425,7 +425,7 @@ def _await_cell_magic(lines):
 
 def load_ipython_extension(ip):
     ns = ip.user_ns
-    for o in ('read_gh_repo','read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
+    for o in ('read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     lts = ip.input_transformer_manager.line_transforms
     if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
 
