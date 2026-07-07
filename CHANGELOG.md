@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.56
+
+### New Features
+
+- Remove `read_gh_repo`/`gh_blob_to_raw` and improve `_get_info` to handle instances, builtins, and wrapped objects ([#57](https://github.com/AnswerDotAI/ipykernel-helper/issues/57))
+
+
 ## 0.0.55
 
 ### New Features
