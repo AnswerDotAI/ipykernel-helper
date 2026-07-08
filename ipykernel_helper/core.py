@@ -26,7 +26,6 @@ from toolslm.funccall import *
 from toolslm.xml import *
 from ast import literal_eval
 from urllib.parse import urlparse, urljoin
-from ghapi.all import GhApi
 from io import StringIO
 
 import typing,warnings,re,os,html2text,base64,inspect,traceback,tokenize
