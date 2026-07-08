@@ -15,7 +15,7 @@ classifiers = ["Natural Language :: English", "Intended Audience :: Developers",
 dependencies = ['pyskills', 'python-fasthtml', 'fastcore>=1.12.28', 'toolslm>=0.3.37', 'jedi', 'ipython', 'ipykernel', 'beautifulsoup4', 'lxml', 'html2text', 'cloudscraper']
 
 [project.optional-dependencies]
-dev = ['pandas']
+dev = ['pandas','jinja2']
 
 [project.urls]
 Repository = "https://github.com/AnswerDotAI/ipykernel-helper"
