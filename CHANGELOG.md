@@ -2,6 +2,17 @@
 
 <!-- do not remove -->
 
+## 0.0.59
+
+### New Features
+
+- Refactor `run_cell_magic` to avoid patching, handle async + FT results via helper functions ([#58](https://github.com/AnswerDotAI/ipykernel-helper/issues/58))
+
+### Bugs Squashed
+
+- `info_md` needs types ([#59](https://github.com/AnswerDotAI/ipykernel-helper/issues/59))
+
+
 ## 0.0.58
 
 ### New Features
