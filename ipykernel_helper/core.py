@@ -390,8 +390,8 @@ def _get_info(self:Inspector, obj, oname='', formatter=None, info=None, detail_l
 
 # %% ../nbs/00_core.ipynb #e0e6d147
 def info_md(
-    obj, # Object to get info for
-    source=False
+    obj:str|object, # Object to get info for, or its name
+    source:bool=False
 ):
     "With `source=False` same as ipython's `?`, otherwise same as `??`"
     obj = resolve(obj)
