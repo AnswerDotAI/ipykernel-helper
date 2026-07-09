@@ -15,7 +15,8 @@ from fastcore.meta import delegates
 from fastcore.utils import patch,patch_to,dict2obj
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
-from fastcore.xtras import truncstr,maybe_await
+from fastcore.xtras import truncstr
+from fastcore.aio import maybe_await
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
