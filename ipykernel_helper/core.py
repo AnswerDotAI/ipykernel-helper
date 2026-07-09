@@ -412,15 +412,17 @@ def structured_traceback(self:SyntaxTB, etype, evalue, etb, tb_offset=None, cont
 def _getfile(obj): return str(inspect._orig_getfile(obj))
 
 # %% ../nbs/00_core.ipynb #ff4984b9
-@patch
-async def run_cell_magic(self:InteractiveShell, magic_name, line, cell):
-    result = self._orig_run_cell_magic(magic_name, line, cell)
-    if inspect.iscoroutine(result): result = await result
-    if isinstance(result, FT): result = HTML(to_xml(result))
-    return result
+def _fmt_magic_res(result): return HTML(to_xml(result)) if isinstance(result, FT) else result
+
+async def _await_magic_res(coro): return _fmt_magic_res(await coro)
+
+def _run_cell_magic(self, magic_name, line, cell):
+    "Like stock `run_cell_magic`, but converts `FT` results to `HTML`, incl. from async magics"
+    result = type(self).run_cell_magic(self, magic_name, line, cell)
+    return _await_magic_res(result) if inspect.iscoroutine(result) else _fmt_magic_res(result)
 
 def _await_cell_magic(lines):
-    if lines and lines[0].lstrip().startswith('get_ipython().run_cell_magic('): lines[0] = f'await {lines[0]}'
+    if lines and lines[0].lstrip().startswith('get_ipython().run_cell_magic('): lines[0] = f'await maybe_await({lines[0].rstrip()})\n'
     return lines
 
 def load_ipython_extension(ip):
@@ -428,6 +430,7 @@ def load_ipython_extension(ip):
     for o in ('read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     lts = ip.input_transformer_manager.line_transforms
     if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
+    if 'run_cell_magic' not in vars(ip): ip.run_cell_magic = MethodType(_run_cell_magic, ip)
 
     dh_cls = type(ip.displayhook)
     _orig_write_format_data = dh_cls.write_format_data
@@ -438,3 +441,4 @@ def load_ipython_extension(ip):
             md_dict['__type'] = type(obj).__qualname__
         return _orig_write_format_data(self, format_dict, md_dict)
     dh_cls.write_format_data = write_format_data
+
