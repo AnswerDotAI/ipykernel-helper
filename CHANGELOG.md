@@ -2,6 +2,11 @@
 
 <!-- do not remove -->
 
+## 0.0.60
+
+- Use fastcore magics
+
+
 ## 0.0.59
 
 ### New Features
@@ -337,4 +342,3 @@
 ## 0.0.1
 
 - init working version
-
