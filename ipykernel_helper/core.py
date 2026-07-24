@@ -16,7 +16,7 @@ from fastcore.utils import patch,patch_to,dict2obj
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
 from fastcore.xtras import truncstr
-from fastcore.aio import maybe_await
+from fastcore.aio import maybe_await,enable_async_magics
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from inspect import signature, currentframe
 from functools import cmp_to_key,partial
@@ -414,23 +414,10 @@ def _getfile(obj): return str(inspect._orig_getfile(obj))
 # %% ../nbs/00_core.ipynb #ff4984b9
 def _fmt_magic_res(result): return HTML(to_xml(result)) if isinstance(result, FT) else result
 
-async def _await_magic_res(coro): return _fmt_magic_res(await coro)
-
-def _run_cell_magic(self, magic_name, line, cell):
-    "Like stock `run_cell_magic`, but converts `FT` results to `HTML`, incl. from async magics"
-    result = type(self).run_cell_magic(self, magic_name, line, cell)
-    return _await_magic_res(result) if inspect.iscoroutine(result) else _fmt_magic_res(result)
-
-def _await_cell_magic(lines):
-    if lines and lines[0].lstrip().startswith('get_ipython().run_cell_magic('): lines[0] = f'await maybe_await({lines[0].rstrip()})\n'
-    return lines
-
 def load_ipython_extension(ip):
     ns = ip.user_ns
     for o in ('read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
-    lts = ip.input_transformer_manager.line_transforms
-    if not any(getattr(f, '__name__', None) == '_await_cell_magic' for f in lts): lts.append(_await_cell_magic)
-    if 'run_cell_magic' not in vars(ip): ip.run_cell_magic = MethodType(_run_cell_magic, ip)
+    enable_async_magics(ip, fmt=_fmt_magic_res)  # magics (line and cell) may be async; FT results become HTML
 
     dh_cls = type(ip.displayhook)
     _orig_write_format_data = dh_cls.write_format_data
