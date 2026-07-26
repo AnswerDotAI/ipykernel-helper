@@ -318,10 +318,7 @@ def _is_prose(o): return any(isinstance(o, t) if isinstance(t, type) else t in _
 @patch
 def format(self:DisplayFormatter, obj, include=None, exclude=None):
     data,meta = self._orig_format(obj, include=include, exclude=exclude)
-    if 'text/markdown' in data and not data['text/markdown'].lstrip().startswith('<div class="prose"'):
-        data['text/markdown'] = f'<div class="prose" markdown="1">\n\n{data["text/markdown"]}\n\n</div>'
-    if 'text/html' in data and _is_prose(obj) and not data['text/html'].lstrip().startswith('<div class="prose"'):
-        data['text/html'] = f'<div class="prose">\n\n{data["text/html"]}\n\n</div>'
+    if 'text/html' in data and _is_prose(obj): meta.setdefault('text/html', {})['prose'] = True
     return data,meta
 
 
