@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.61
+
+### New Features
+
+- Replace prose HTML div wrapping with metadata flag for cleaner output delegation ([#61](https://github.com/AnswerDotAI/ipykernel-helper/issues/61))
+
+
 ## 0.0.60
 
 - Use fastcore magics
