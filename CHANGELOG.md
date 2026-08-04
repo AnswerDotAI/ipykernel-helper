@@ -2,6 +2,13 @@
 
 <!-- do not remove -->
 
+## 0.0.62
+
+### New Features
+
+- Move namespace introspection, completion, and signature helpers out to new ipyfuncs dependency ([#62](https://github.com/AnswerDotAI/ipykernel-helper/issues/62))
+
+
 ## 0.0.61
 
 ### New Features
