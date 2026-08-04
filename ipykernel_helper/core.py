@@ -12,28 +12,23 @@ __all__ = ['prose_types', 'transient', 'run_cmd', 'get_md', 'scrape_url', 'read_
 from fasthtml.common import *
 from pyskills import resolve
 from fastcore.meta import delegates
-from fastcore.utils import patch,patch_to,dict2obj
+from fastcore.utils import patch,patch_to
 from fastcore.docments import sig_source,DocmentText
 from fastcore.net import HTTP404NotFoundError
 from fastcore.xtras import truncstr
 from fastcore.aio import maybe_await,enable_async_magics
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
-from inspect import signature, currentframe
 from functools import cmp_to_key,partial
-from collections.abc import Mapping
 from textwrap import dedent
 from cloudscraper import create_scraper
-from toolslm.funccall import *
+from fastcore.funccall import *
 from toolslm.xml import *
-from ast import literal_eval
+import ipyfuncs
 from urllib.parse import urlparse, urljoin
-from io import StringIO
 
-import typing,warnings,re,os,html2text,base64,inspect,traceback,tokenize
+import re,os,html2text,base64,inspect
 
 from IPython.core.interactiveshell import InteractiveShell
-from IPython.core.completer import ProvisionalCompleterWarning
-from jedi import Interpreter, Script as jscript
 
 from IPython.core.display import DisplayObject
 from IPython.display import display,Markdown,HTML
@@ -42,172 +37,11 @@ from IPython.core.displayhook import DisplayHook
 from ipykernel.displayhook import ZMQShellDisplayHook
 from IPython.core.formatters import DisplayFormatter
 
-# %% ../nbs/00_core.ipynb #06cb0934
-warnings.filterwarnings('ignore', category=ProvisionalCompleterWarning)
-
-# %% ../nbs/00_core.ipynb #2fc8512a
-def _safe_repr(obj, max_len=200):
-    "Safely get the repr() of an object, truncating if it exceeds max_len."
-    try:
-        s = str(obj)
-        return s[:max_len] + ("…" if len(s)>max_len else "")
-    except Exception as e: return f"<repr error: {str(e)}>"
-
-# %% ../nbs/00_core.ipynb #1e600ee2
-def _safe_sig(v):
-    try: return str(signature(v))
-    except Exception: return '(...)'
-
-@patch
-def user_items(self:InteractiveShell, max_len=200, xtra_skip=()):
-    "Get user-defined vars & funcs from namespace."
-    ns,nsh = self.user_ns,self.user_ns_hidden
-    ignore = {'nbmeta', 'receive_nbmeta'}
-    ignore.add(xtra_skip)
-    rm_types = (
-        type, FunctionType, ModuleType, MethodType, BuiltinFunctionType,
-        getattr(typing, '_SpecialGenericAlias', ()),
-        getattr(typing, '_GenericAlias', ()),
-        getattr(typing, '_SpecialForm', ())
-    )
-    user_items = {k:v for k, v in ns.items()
-                  if not k in ignore and k not in nsh}
-    user_vars = {k:_safe_repr(v, max_len=max_len)
-                 for k, v in user_items.items() if not k.startswith('_') and not isinstance(v, rm_types)}
-    user_fns = {k:_safe_sig(v) for k, v in user_items.items()
-                if isinstance(v, FunctionType) and v.__module__ == '__main__' and not k.startswith('__')}
-    return user_vars,user_fns
-
-# %% ../nbs/00_core.ipynb #3c9a4ad3
-def _rank(c, s):
-    "Rank a completion `c` for text `s` with namespace `ns`."
-    parts = s.split('.')
-    is_public = not c.text.startswith('_')
-    if c.type=='param': r=1
-    elif c.mod=='__main__': r=2 # local
-    elif len(parts)>1 and parts[0]==c.mod: r=3 # module
-    elif c.mod=='builtins': r=4
-    else: r=5
-    return r if is_public else r+0.1
-
-# %% ../nbs/00_core.ipynb #047a202b
-@patch
-def ranked_complete(self:InteractiveShell, code, line_no=None, col_no=None):
-    ns = self.user_ns
-    lines = code.splitlines(True)
-    if line_no: offset = sum(len(lines[i]) for i in range(line_no-1)) + col_no -1
-    else: offset = len(code)
-    cs = self.Completer.completions(code, offset)
-    def _c(a):
-        res = dict2obj(text=a.text, type=str(a.type or ''), signature=str(getattr(a, 'signature', '') or ''), start=a.start, end=a.end)
-        res['mod'] = getattr(ns.get(a.text, None), '__module__', None)
-        res['rank'] = _rank(res, s=code)
-        return res
-    return [_c(c) for c in cs if not c.text.startswith('__') or '__' in code]
-
-# %% ../nbs/00_core.ipynb #192310a4
-def _maybe_eval(o):
-    try: literal_eval(repr(o)); return o
-    except: return str(o)
-
-# %% ../nbs/00_core.ipynb #b3613f76
-@patch
-def get_vars(self:InteractiveShell, vs:list, literal=True):
-    "Get variables from namespace."
-    ns = self.user_ns
-    return {v:_maybe_eval(ns[v]) if literal else str(ns[v]) for v in vs if v in ns}
-
-# %% ../nbs/00_core.ipynb #ed89fa06
-@patch
-async def eval_exprs(self:InteractiveShell, vs:list, literal=True):
-    "Evaluate expressions in namespace."
-    ns,res = self.user_ns,{}
-    for v in vs:
-        try:
-            e = await maybe_await(eval(v, ns))
-            res[v] = _maybe_eval(e) if literal else str(e)
-        except Exception as e: res[v] = f'<error type="{type(e).__name__}" desc="{e}">\n{traceback.format_exc()}</error>'
-    return res
-
-# %% ../nbs/00_core.ipynb #d4195d94
-def _get_schema(ns: dict, t):
-    "Check if tool `t` has errors."
-    try: schema = get_schema_nm(t, ns, pname='parameters', evalable=True, skip_hidden=True, dot2dash=True)
-    except (KeyError, AttributeError): return f"`{t}` not found. Did you run it?"
-    except Exception as e: return f"`{t}`: {e}."
-    return {'type':'function', 'function':schema}
-
-@patch
-def get_schemas(self:InteractiveShell, fs:list):
-    "Get schemas from namespace."
-    return {f:_get_schema(self.user_ns, f) for f in fs}
-
 # %% ../nbs/00_core.ipynb #281193c9
 @patch
 def xpush(self:InteractiveShell, interactive=False, **kw):
     "Like `push`, but with kwargs"
     self.push(kw, interactive=interactive)
-
-# %% ../nbs/00_core.ipynb #50ec6221
-def _signatures(ns, s, line, col):
-    ctx = Interpreter(s, [ns]).get_signatures(line, col)
-    if not ctx: ctx = jscript(s).get_signatures(line, col)
-    return ctx
-
-@patch
-def _sig_jedi(self:InteractiveShell, code, line_no=None, col_no=None):
-    ns = self.user_ns
-    ctx = _signatures(ns, code, line=line_no, col=col_no)
-    if ctx:
-        def _s(s): return {'label':s.description,'typ':s.type, 'mod':s.module_name, 'doc':s.docstring(),
-                           'idx':s.index, 'params':[{'name':p.name, 'desc':p.description} for p in s.params]}
-        return [_s(opt) for opt in ctx]
-    return []
-
-# %% ../nbs/00_core.ipynb #a7fa20ce
-def _param_idx(code, cursor_pos):
-    toks = []
-    def op(s): return s == tokenize.OP
-    g = tokenize.generate_tokens(StringIO(code[:cursor_pos]).readline)
-    while True:
-        try: toks.append(next(g))
-        except (tokenize.TokenError, StopIteration): break
-    depth,idx = 0,0
-    for t in reversed(toks):
-        if op(t.type) and t.string in ')]}': depth += 1
-        elif op(t.type) and t.string in '([{':
-            if depth == 0: return idx
-            depth -= 1
-        elif op(t.type) and t.string == ',' and depth == 0: idx += 1
-    return 0
-
-# %% ../nbs/00_core.ipynb #af7f189f
-@patch
-def _sig_dyn(self:InteractiveShell, code, line_no=None, col_no=None):
-    from IPython.utils.tokenutil import token_at_cursor
-    lines = code.splitlines()
-    cursor_pos = sum(len(l)+1 for l in lines[:line_no-1])+col_no if line_no else len(code)
-    name = token_at_cursor(code, cursor_pos)
-    info = self._object_find(name)
-    if not (info.found and callable(info.obj)): return []
-    try: sig = inspect.signature(info.obj)
-    except (ValueError, TypeError): return []
-    return [{'label':name, 'typ':type(info.obj).__name__, 'mod':getattr(info.obj,'__module__',''),
-             'doc':getattr(info.obj,'__doc__','') or '', 'idx':_param_idx(code, cursor_pos),
-             'params':[{'name':p.name, 'desc':str(p)} for p in sig.parameters.values()]}]
-
-# %% ../nbs/00_core.ipynb #0c1e6cc7
-@patch
-def sig_help(self:InteractiveShell, code, line_no=None, col_no=None):
-    "Get signature help for code at cursor position using dynamic analysis or jedi as a backup."
-    return self._sig_dyn(code, line_no, col_no=col_no) or self._sig_jedi(code, line_no, col_no=col_no)
-
-# %% ../nbs/00_core.ipynb #d4a073da
-@patch
-def publish(self:InteractiveShell, data='', subtype='plain', mimetype='text', meta=None, update=False, **kw):
-    if isinstance(data, DisplayObject): data,_ = self.display_formatter.format(data)
-    elif not isinstance(data, Mapping): data = {f'{mimetype}/{subtype}': data}
-    self.display_pub.publish(data, metadata=meta, transient=kw, update=update)
 
 # %% ../nbs/00_core.ipynb #bb1ed4d6
 def transient(data='', subtype='plain', mimetype='text', meta=None, update=False, **kw):
