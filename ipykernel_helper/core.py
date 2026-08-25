@@ -20,9 +20,7 @@ from fastcore.aio import maybe_await,enable_async_magics
 from types import ModuleType, FunctionType, MethodType, BuiltinFunctionType
 from functools import cmp_to_key,partial
 from textwrap import dedent
-from cloudscraper import create_scraper
 from fastcore.funccall import *
-from toolslm.xml import *
 import ipyfuncs
 from urllib.parse import urlparse, urljoin
 
@@ -72,6 +70,7 @@ def get_md(html, url='', mmode=None, ignore_links=False, ignore_images=False, ma
 
 # %% ../nbs/00_core.ipynb #18980edf
 def scrape_url(url): 
+    from cloudscraper import create_scraper
     o = create_scraper().get(url)
     if not o.encoding or o.encoding == 'ISO-8859-1': o.encoding = 'utf-8'
     return o
