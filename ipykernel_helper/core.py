@@ -249,13 +249,9 @@ def load_ipython_extension(ip):
     for o in ('read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     enable_async_magics(ip, fmt=_fmt_magic_res)  # magics (line and cell) may be async; FT results become HTML
 
-    dh_cls = type(ip.displayhook)
-    _orig_write_format_data = dh_cls.write_format_data
-    def write_format_data(self, format_dict, md_dict=None):
-        obj = self.shell.user_ns.get('_')
-        if obj is not None:
-            if md_dict is None: md_dict = {}
-            md_dict['__type'] = type(obj).__qualname__
-        return _orig_write_format_data(self, format_dict, md_dict)
-    dh_cls.write_format_data = write_format_data
+    @patch_to(type(ip.displayhook))
+    def compute_format_data(self, result):
+        format_dict, md_dict = self._orig_compute_format_data(result)
+        md_dict['__type'] = type(result).__qualname__
+        return format_dict, md_dict
 
