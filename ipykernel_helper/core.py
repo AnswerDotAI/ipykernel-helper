@@ -246,7 +246,7 @@ def _fmt_magic_res(result): return HTML(to_xml(result)) if isinstance(result, FT
 
 def load_ipython_extension(ip):
     ns = ip.user_ns
-    for o in ('read_url','transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
+    for o in ('transient','run_cmd','maybe_await','call_tool'): ns[o] = globals()[o]
     enable_async_magics(ip, fmt=_fmt_magic_res)  # magics (line and cell) may be async; FT results become HTML
 
     @patch_to(type(ip.displayhook))
@@ -254,4 +254,3 @@ def load_ipython_extension(ip):
         format_dict, md_dict = self._orig_compute_format_data(result)
         md_dict['__type'] = type(result).__qualname__
         return format_dict, md_dict
-
