@@ -2,6 +2,18 @@
 
 <!-- do not remove -->
 
+## 0.0.63
+
+### New Features
+
+- Stamp result type name into output metadata via patched displayhook compute_format_data instead of overriding write_format_data ([#64](https://github.com/AnswerDotAI/ipykernel-helper/issues/64))
+- Lazy import cloudscraper ([#63](https://github.com/AnswerDotAI/ipykernel-helper/issues/63))
+
+### Bugs Squashed
+
+- read_url leaves the kernel namespace ([#65](https://github.com/AnswerDotAI/ipykernel-helper/pull/65)), thanks to [@jph00](https://github.com/jph00)
+
+
 ## 0.0.62
 
 ### New Features
