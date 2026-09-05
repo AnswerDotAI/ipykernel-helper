@@ -91,7 +91,7 @@ def _extract_section(soup, url, selector=None):
     parsed = urlparse(url)
     if not parsed.fragment: return str(soup)
     section = soup.find(id=parsed.fragment)
-    if not section: return ''
+    if not section: return str(soup)  # fragment not in served html; fall back to whole page
     elements = [section]
     current = section.next_sibling
     while current:
